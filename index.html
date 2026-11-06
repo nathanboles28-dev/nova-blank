@@ -1323,8 +1323,15 @@ body.morn #mini{opacity:0!important}
  .wr-body .wr-po{aspect-ratio:auto;height:calc(15*var(--u))}
  #sun .big{font-size:calc(3*var(--u))}
  /* Knights / Leafs hub: header and next games full width, the rest side by side */
- .hb-body:not(.wk-body){display:grid!important;grid-template-columns:1fr 1fr;align-content:start;column-gap:calc(2.6*var(--u))}
- .hb-body:not(.wk-body)>:nth-child(-n+2){grid-column:1/-1}
+ .hb-body:not(.wk-body):not(.rc-body){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);align-content:start;gap:calc(2*var(--u)) calc(2.4*var(--u))}
+ .hb-body:not(.wk-body):not(.rc-body)>*{grid-column:1/-1}
+ .hb-body:not(.wk-body):not(.rc-body)>:nth-child(1){grid-column:1}.hb-body:not(.wk-body):not(.rc-body)>:nth-child(2){grid-column:2}
+ /* standings: NHL and OHL side by side */
+ #standBody{display:grid!important;grid-template-columns:1fr 1fr;align-items:start}
+ /* with the mini player showing, it already covers the bottom strip: no extra gap above it */
+ body.npBar .page{bottom:calc(12*var(--u))}
+ body.npBar :is(.lv-body,.gd-body,.lc-body,.hb-body,.wr-body,.wt-body,.ts-body,.jf-idle,.jf-one,.jf-two,#txBody){bottom:calc(1*var(--u))!important}
+ body.npBar .pwrap{padding-bottom:calc(1*var(--u))!important}
  /* game day: a bit smaller so the last-10 and goalie cards fit */
  .gd-hero{padding:calc(2*var(--u))}.gd-kick{font-size:calc(2*var(--u))}.gd-vs{margin:calc(1*var(--u)) 0}
  .gd-lg,.gd-ph{width:calc(10*var(--u))!important;height:calc(10*var(--u))!important}.gd-cd{font-size:calc(8*var(--u))}.gd-cdl{font-size:calc(2.4*var(--u));margin-top:calc(.8*var(--u))}
@@ -2297,7 +2304,7 @@ function renderStandings(){
       <div class="ssec">Metropolitan</div>${stMet.slice(0,3).map((r,i)=>row(r,'M'+(i+1))).join('')}
       <div class="ssec">Wild card</div>${wc.slice(0,2).map((r,i)=>row(r,'WC'+(i+1),i===1?' cut':'')).join('')}${wc.slice(2,5).map(r=>row(r,'')).join('')}</div>`};
   const nhlCard=stView&&race()?race():table('NHL · Atlantic Division',stNHL,(nhlL&&nhlL.fav)||[],r=>r.logo,3,8);
-  const html=nhlCard+(stView&&race()?'':table('OHL · Western Conference',stOHL,(ohlL&&ohlL.fav)||[],r=>ohlLogo[r.c]||'',8,10));
+  const html=nhlCard+(stView&&race()?'':table('OHL · Western Conference',stOHL,(ohlL&&ohlL.fav)||[],r=>ohlLogo[r.c]||'',8,matchMedia('(orientation:landscape)').matches?8:10));
   $('standBody').innerHTML=html||'<div class="gnone">Standings unavailable right now</div>';
   $('standBody').style.cssText='display:flex;flex-direction:column;gap:calc(3*var(--u))';
 }
@@ -4782,7 +4789,7 @@ function radarSay(){const P=(PL&&PL.planes)||[];if(!P.length)return 'No planes o
 /* Keep pixels moving to avoid burn-in */
 setInterval(()=>{const x=(Math.random()*2-1)*.8,y=(Math.random()*2-1)*.8;document.querySelectorAll('.page').forEach(el=>el.style.transform=`translate(${x}vw,${y}vh)`)},300000);
 
-document.getElementById('ver').textContent='build nova 88';
+document.getElementById('ver').textContent='build nova 89';
 /* ---------- Glass theme background: a softly blurred photo from your folder, changes every few minutes ---------- */
 let bgOn=0,bgFails=0;
 function bgCycle(){
