@@ -8,7 +8,7 @@ DEV="${NOVA_DEVICE:-Mac}"; CAP="${DAILY_CAP:-200}"
 esc(){ printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | tr -d '\000-\037'; }
 num(){ case "$1" in ''|*[!0-9-]*) echo 0;; *) echo "$1";; esac; }
 now=$(date +%s)
-IFS=$'\037' read -r st nm ar al yr du ps pid <<EOF2
+IFS=$'\037' read -r st nm ar al yr du ps pid src vid <<EOF2
 $1
 EOF2
 if [ "$st" = error ]; then printf '%s  %s\n' "$(date)" "$nm" > "$DIR/nova-music-error.txt"; fi
@@ -17,13 +17,19 @@ case "$st" in *kPSP*|*kPSF*|*kPSR*) st=playing;; *kPSp*) st=paused;; esac
 case "$st" in playing|paused) ;; *) st=stopped;; esac
 # AppleScript gives decimals (with your Mac's decimal mark): keep whole seconds
 du=$(num "${du%%[.,]*}"); ps=$(num "${ps%%[.,]*}"); yr=$(num "$yr")
+# YouTube in Brave: tidy the title, and pull the video id out of the address if that's all we got
+if [ "$src" = youtube ]; then
+  nm=$(printf '%s' "$nm" | sed -E 's/^\([0-9]+\) //; s/ - YouTube$//')
+  case "$vid" in *youtube.com*) vid=$(printf '%s' "$vid" | sed -E 's#.*/shorts/([A-Za-z0-9_-]+).*#\1#; s#.*[?&]v=([A-Za-z0-9_-]+).*#\1#');; esac
+  case "$vid" in *[!A-Za-z0-9_-]*) vid="";; esac
+fi
 key="$st|$pid|$nm|$ar"; jump=0
 if [ "$st" = playing ] && [ "$key" = "$last_key" ]; then
   diff=$((ps - (last_pos + now - last_t))); [ "${diff#-}" -gt 6 ] && jump=1
 fi
 if [ "$key" != "$last_key" ] || [ "$jump" = 1 ]; then
   if [ "$st" = stopped ]; then body="{\"state\":\"stopped\",\"at\":$now,\"dev\":\"$(esc "$DEV")\"}"
-  else body="{\"state\":\"$st\",\"title\":\"$(esc "$nm")\",\"artist\":\"$(esc "$ar")\",\"album\":\"$(esc "$al")\",\"year\":$yr,\"dur\":$du,\"pos\":$ps,\"at\":$now,\"dev\":\"$(esc "$DEV")\"}"; fi
+  else body="{\"state\":\"$st\",\"title\":\"$(esc "$nm")\",\"artist\":\"$(esc "$ar")\",\"album\":\"$(esc "$al")\",\"year\":$yr,\"dur\":$du,\"pos\":$ps,\"at\":$now,\"dev\":\"$(esc "$DEV")\"${src:+,\"src\":\"$(esc "$src")\",\"vid\":\"$(esc "$vid")\"}}"; fi
   d=$(date +%Y-%m-%d); [ "$d" != "$sent_day" ] && { sent_day=$d; sent=0; }
   # nothing to announce when it starts up with nothing playing; daily safety limit for the free channel
   if { [ -n "$last_key" ] || [ "$st" != stopped ]; } && [ "$sent" -lt "$CAP" ]; then

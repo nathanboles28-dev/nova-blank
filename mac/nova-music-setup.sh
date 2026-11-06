@@ -71,12 +71,71 @@ on idle
 	on error vErr
 		set vOut to "error" & vSep & vErr
 	end try
+	-- BRAVE START: nothing playing in Music? look for a YouTube video in Brave
+	if vOut does not start with "playing" then
+		try
+			set vYT to my braveYouTube(vSep)
+			if vYT is not "" then
+				if vYT starts with "playing" or vOut is "off" or vOut is "stopped" or vOut starts with "error" then set vOut to vYT
+			end if
+		end try
+	end if
+	-- BRAVE END
 	try
 		do shell script "/bin/bash " & quoted form of helper & " " & quoted form of vOut
 	end try
 	return 3
 end idle
+-- BRAVE START
+on braveYouTube(vSep)
+	if application "Brave Browser" is not running then return ""
+	set vJS to "(()=>{const S=String.fromCharCode(31),v=document.querySelector('video');if(!v)return '';const c=document.querySelector('#owner #channel-name a, ytd-video-owner-renderer #channel-name a, ytd-reel-channel-bar-view-model a, #channel-name a');const m=location.pathname.match(/shorts.([A-Za-z0-9_-]+)/);const id=m?m[1]:(new URLSearchParams(location.search).get('v')||'');const t=document.title.replace(/^[(][0-9]+[)] /,'').replace(/ - YouTube$/,'');return [v.paused?'paused':'playing',t,c?c.textContent.trim():'',Math.floor(v.duration||0),Math.floor(v.currentTime||0),id].join(S)})()"
+	set vBest to ""
+	tell application "Brave Browser"
+		repeat with vW in windows
+			repeat with vT in tabs of vW
+				set vU to ""
+				try
+					set vU to URL of vT
+				end try
+				if vU contains "youtube.com/watch" or vU contains "youtube.com/shorts/" then
+					set vR to ""
+					try
+						set vR to (execute vT javascript vJS) as text
+					end try
+					if vR is "missing value" then set vR to ""
+					if vR is "" then
+						-- "Allow JavaScript from Apple Events" is off in Brave: the tab's title only
+						set vTitle to ""
+						try
+							set vTitle to title of vT
+						end try
+						set vR to "playing" & vSep & vTitle & vSep & "" & vSep & "0" & vSep & "0" & vSep & vU
+					end if
+					if vR starts with "playing" then return my ytLine(vR, vSep)
+					if vBest is "" then set vBest to vR
+				end if
+			end repeat
+		end repeat
+	end tell
+	if vBest is "" then return ""
+	return my ytLine(vBest, vSep)
+end braveYouTube
+on ytLine(vR, vSep)
+	set vOld to AppleScript's text item delimiters
+	set AppleScript's text item delimiters to vSep
+	set vP to text items of vR
+	set AppleScript's text item delimiters to vOld
+	if (count of vP) < 6 then return ""
+	return (item 1 of vP) & vSep & (item 2 of vP) & vSep & (item 3 of vP) & vSep & "YouTube" & vSep & "0" & vSep & (item 4 of vP) & vSep & (item 5 of vP) & vSep & "yt:" & (item 6 of vP) & vSep & "youtube" & vSep & (item 6 of vP)
+end ytLine
+-- BRAVE END
 OSA
+# Brave isn't on this Mac: leave the YouTube part out (the app can't be built if it mentions an app that isn't installed)
+if [ ! -d "/Applications/Brave Browser.app" ] && [ ! -d "$HOME/Applications/Brave Browser.app" ]; then
+  sed -i '' '/-- BRAVE START/,/-- BRAVE END/d' "$DEST/nova-music.applescript"
+  echo "(Brave isn't installed here, so YouTube videos are skipped.)"
+fi
 APP="$DEST/Nova Music.app"; rm -rf "$APP"
 osacompile -s -o "$APP" "$DEST/nova-music.applescript" || { echo "Couldn't build the Nova Music app."; exit 1; }
 PB=/usr/libexec/PlistBuddy; IP="$APP/Contents/Info.plist"
@@ -100,4 +159,6 @@ launchctl bootstrap "gui/$(id -u)" "$PL" 2>/dev/null || launchctl load -w "$PL"
 echo
 echo "Done. Play a song in Apple Music now."
 echo "A box should ask: \"Nova Music\" wants access to control \"Music\". Click OK (or Allow)."
+echo "For YouTube in Brave: play a video, click OK when it asks to control \"Brave Browser\", and in Brave turn on"
+echo "  View > Developer > Allow JavaScript from Apple Events   (so the TV knows play/pause and how far along you are)."
 echo "If no box shows up, open System Settings > Privacy & Security > Automation and turn on Music under Nova Music."

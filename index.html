@@ -721,7 +721,7 @@ body.hasAlert #mini{top:calc(9.5*var(--u))}
 .hb2-hd{display:grid;grid-template-columns:auto 1fr;gap:calc(2.6*var(--u));align-items:center;padding:calc(2.6*var(--u))}
 .hb2-logo{width:calc(15*var(--u));height:calc(15*var(--u));object-fit:contain;filter:drop-shadow(0 calc(.6*var(--u)) calc(1.4*var(--u)) rgba(0,0,0,.45))}
 .hb2-ph{display:grid;place-items:center;font-style:normal;font-weight:800;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25)}i.hb2-logo{font-size:calc(4*var(--u))}
-.hb2-rec{font-size:calc(7*var(--u));font-weight:300;line-height:1}.hb2-rec small{font-size:calc(2.6*var(--u));color:var(--dim);margin-left:calc(1.2*var(--u))}
+.hb2-rec{font-size:calc(7*var(--u));font-weight:300;line-height:1}.hb2-rec small{font-size:calc(2.6*var(--u));color:var(--dim);margin-left:calc(1.2*var(--u));white-space:nowrap}
 .hb2-chips{display:flex;flex-wrap:wrap;gap:calc(1*var(--u));margin-top:calc(1.4*var(--u))}
 .hb2-chip{font-size:calc(2.1*var(--u));font-weight:700;padding:calc(.6*var(--u)) calc(1.5*var(--u));border-radius:calc(3*var(--u));background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
 .hb2-chip.b{background:rgba(77,139,255,.22);border-color:rgba(77,139,255,.55);color:#dbe7ff}.hb2-chip.g{background:rgba(95,216,138,.2);border-color:rgba(95,216,138,.5);color:#c8f5d6}.hb2-chip.r{background:rgba(255,120,120,.2);border-color:rgba(255,120,120,.5);color:#ffd0d0}
@@ -1102,6 +1102,10 @@ body.npBar #txBody{bottom:calc(2*var(--u))}
 .np-eq i:nth-child(2){animation-delay:-.3s}.np-eq i:nth-child(3){animation-delay:-.6s}.np-eq i:nth-child(4){animation-delay:-.15s}
 @keyframes npEq{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
 .paused .np-eq i{animation:none;transform:scaleY(.3)}
+/* YouTube videos: a wide 16:9 thumbnail */
+.np-art.yt{aspect-ratio:16/9;width:92%}
+#npCard .ca.yt{width:calc(22*var(--u));height:calc(12.4*var(--u))}
+#npMini.yt .mn-a{width:calc(12*var(--u))}
 /* mini player */
 #npMini{position:fixed;left:5%;right:5%;bottom:calc(4*var(--u));height:calc(10.4*var(--u));z-index:4;display:none;align-items:center;gap:calc(2*var(--u));padding:calc(1.4*var(--u)) calc(2.6*var(--u)) calc(1.4*var(--u)) calc(1.4*var(--u));overflow:hidden;
  border-radius:calc(2.6*var(--u));background:linear-gradient(90deg,var(--np1,rgba(60,22,60,.92)),var(--np2,rgba(24,18,46,.92)));border:1px solid rgba(255,255,255,.16);box-shadow:0 calc(1.8*var(--u)) calc(4*var(--u)) rgba(0,0,0,.5)}
@@ -1303,6 +1307,8 @@ body.morn #mini{opacity:0!important}
  #npBody{flex-direction:row;gap:5vw;padding:calc(12*var(--u)) 7vw calc(7*var(--u))}
  .np-art{width:auto;height:min(66vh,40vw);flex:none}
  .np-meta{width:auto;flex:1;max-width:48vw;margin-top:0}
+ .np-art.yt{height:auto;width:52vw;aspect-ratio:16/9}
+ #npBody.yt .np-meta{max-width:34vw}
  /* mini player: a compact bar in the bottom-right corner */
  #npMini{left:auto;right:3vw;width:min(44vw,calc(78*var(--u)));height:calc(8.4*var(--u));bottom:calc(3.2*var(--u));padding:calc(1*var(--u)) calc(2.2*var(--u)) calc(1*var(--u)) calc(1*var(--u))}
  #npMini .mn-a{width:calc(6.4*var(--u));height:calc(6.4*var(--u))}#npMini b{font-size:calc(2.4*var(--u))}#npMini small{font-size:calc(1.8*var(--u))}
@@ -1326,11 +1332,15 @@ body.morn #mini{opacity:0!important}
  .hb-body:not(.wk-body):not(.rc-body){display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);align-content:start;gap:calc(2*var(--u)) calc(2.4*var(--u))}
  .hb-body:not(.wk-body):not(.rc-body)>*{grid-column:1/-1}
  .hb-body:not(.wk-body):not(.rc-body)>:nth-child(1){grid-column:1}.hb-body:not(.wk-body):not(.rc-body)>:nth-child(2){grid-column:2}
+ .hb2-rec{font-size:calc(6*var(--u))}.hb2-logo{width:calc(12*var(--u));height:calc(12*var(--u))}.hb2-hd{gap:calc(2*var(--u));padding:calc(2.2*var(--u))}
+ .lc-body.nomap{grid-template-columns:1fr!important}
+ .gd-body{grid-template-rows:auto minmax(0,1fr)}.gd-two{align-self:stretch!important;min-height:0}
+ .gd-two>.gd-card{overflow:hidden}.gd-two .gd-sub,.gd-two .gd-p{display:none}
  /* standings: NHL and OHL side by side */
  #standBody{display:grid!important;grid-template-columns:1fr 1fr;align-items:start}
  /* with the mini player showing, it already covers the bottom strip: no extra gap above it */
  body.npBar .page{bottom:calc(12*var(--u))}
- body.npBar :is(.lv-body,.gd-body,.lc-body,.hb-body,.wr-body,.wt-body,.ts-body,.jf-idle,.jf-one,.jf-two,#txBody){bottom:calc(1*var(--u))!important}
+ body.npBar :is(.lv-body,.gd-body,.lc-body,.hb-body,.wr-body,.wt-body,.ts-body,#txBody){bottom:calc(1*var(--u))!important}
  body.npBar .pwrap{padding-bottom:calc(1*var(--u))!important}
  /* game day: a bit smaller so the last-10 and goalie cards fit */
  .gd-hero{padding:calc(2*var(--u))}.gd-kick{font-size:calc(2*var(--u))}.gd-vs{margin:calc(1*var(--u)) 0}
@@ -1340,7 +1350,9 @@ body.morn #mini{opacity:0!important}
  .wt-body,.wr-body{display:grid!important;grid-template-columns:1fr 1fr;grid-auto-rows:auto;align-content:start;column-gap:calc(2.6*var(--u));row-gap:calc(1.8*var(--u))}
  /* team news: the story on the left, more headlines on the right */
  #newsBody{flex-direction:row!important;align-items:stretch}
- #newsBody>.nt-hero{flex:1.3 1 0!important;min-width:0}#newsBody>.nt-list{flex:1 1 0!important;min-width:0;align-self:flex-start}
+ #newsBody>.nt-hero{flex:1.3 1 0!important;min-width:0;display:flex;flex-direction:column;align-self:stretch;overflow:hidden}
+ .nt-hero .nt-img{aspect-ratio:auto;height:45%;flex:none}
+ .nt-hero .nt-text{flex:1;min-height:0;-webkit-mask-image:linear-gradient(180deg,#000 72%,transparent);mask-image:linear-gradient(180deg,#000 72%,transparent)}#newsBody>.nt-list{flex:1 1 0!important;min-width:0;align-self:flex-start}
 }
 </style>
 </head>
@@ -2282,6 +2294,9 @@ async function renderNews(){
   if(nb.innerHTML!==html)nb.innerHTML=html;
   nb.style.cssText='display:flex;flex-direction:column;gap:calc(2.2*var(--u));flex:1;min-height:0;overflow:hidden';
   const over=()=>nb.scrollHeight>nb.clientHeight+2;[...nb.children].forEach(c=>c.style.flexShrink='0');
+  /* wide screen: story and headlines are side by side, so each column fits on its own */
+  if(matchMedia('(orientation:landscape)').matches){const L=nb.querySelector('.nt-list'),bot=nb.getBoundingClientRect().bottom+1;
+    for(let g=0;g<8&&L&&L.getBoundingClientRect().bottom>bot;g++){const r=L.querySelectorAll('.nt-row');if(r.length>1)r[r.length-1].remove();else break}return}
   for(let g=0;g<4&&over();g++){const r=nb.querySelectorAll('.nt-row');if(r.length>2)r[r.length-1].remove();else break}
   for(let g=0;g<6&&over();g++){const p=nb.querySelectorAll('.nt-text p');if(p.length>1)p[p.length-1].remove();else break}
   if(over())nb.querySelector('.nt-text').classList.add('clip');
@@ -2759,7 +2774,7 @@ function handleCommand(raw){
   if(has(/\b(satellite|clouds?|storm track)\b/)){showFor('sat');return reply('Here\'s the live satellite view of the Great Lakes.')}
   if(has(/\b(cams?|webcams?|cameras?|traffic cams?)\b/)){showFor('cams');return reply('Here are the traffic cams.')}
   if(has(/\b(trades?|signings?|signed|free agen(t|ts|cy)|hot stove|transactions?)\b/)){showFor('tx');const x=TX&&(TX.mine[0]||TX.nhl[0]||TX.mlb[0]);return reply(x?(x.kind==='trade'?`Latest: the ${x.nameA} get ${x.aGets||'something'}, the ${x.nameB} get ${x.bGets||'something'}.`:`Latest: the ${x.team} signed ${x.who}.`):'No trades or signings lately.')}
-  if(has(/\b(now playing|what song|this song|apple music|the music|what'?s this song)\b/)){const st=npState();if(st)showFor('np');return reply(st?`${st.title} by ${st.artist}`:'Nothing is playing on Apple Music right now.')}
+  if(has(/\b(now playing|what song|this song|apple music|the music|what'?s this song)\b/)){const st=npState();if(st)showFor('np');return reply(st?(npYT(st)?`${st.title}, on YouTube`:`${st.title} by ${st.artist}`):'Nothing is playing right now.')}
   if(has(/\b(backed up|backup (is )?done|did (a|the) backup|log (a|the) backup)\b/)){showFor('tech');markBackup();return reply('Got it, the '+TC().backup+' backup is logged for today.')}
   if(has(/\b(morning (mode|page|briefing|rundown)|get going)\b/)){showFor('morn');return reply('Here\'s your morning.')}
   if(has(/\b(drive times?|how long to (drive|get) to|commute)\b/)){showFor('local');return reply(drvSay())}
@@ -3080,7 +3095,7 @@ function renderLocal(){
   const mapHTML=mapOK?`<div class="jf-glass gd-card lc-map"><h2>Live traffic</h2><div class="lc-mbig tm-map" id="lm0"><span class="tm-name">${esc((V[0]||{}).name||CFG.city)}</span></div>
       <div class="lc-mrow">${V.slice(1,3).map((v,i)=>`<div class="tm-map" id="lm${i+1}"><span class="tm-name">${esc(v.name)}</span></div>`).join('')}</div>
       <div class="tm-leg"><span><i style="background:#3fd27a"></i>Moving</span><span><i style="background:#ffb000"></i>Slow</span><span><i style="background:#ff3b30"></i>Heavy</span><span><i style="background:#8e0e1a"></i>Stopped</span><em id="lmUpd">Updated ${fmt(new Date())}</em></div></div>`
-    :`<div class="jf-glass gd-card lc-map off"><h2>Live traffic</h2><div class="cnote">${(CFG.trafficMap||{}).on===false?'Traffic map is turned off':'The traffic map rests overnight and comes back at '+(((CFG.trafficMap||{}).quietTo??6))+' AM'}</div></div>`;
+    :(CFG.trafficMap||{}).on===false?'':`<div class="jf-glass gd-card lc-map off"><h2>Live traffic</h2><div class="cnote">${(CFG.trafficMap||{}).on===false?'Traffic map is turned off':'The traffic map rests overnight and comes back at '+(((CFG.trafficMap||{}).quietTo??6))+' AM'}</div></div>`;
   const camHTML=cams.length?`<div class="lc-cams c${cams.length} hero">${cams.map(c=>`<div class="lc-cam"><img data-src="${esc(c.img)}" src="${esc(c.img)}" alt="" onerror="this.style.opacity=0"><span class="lc-lv">LIVE</span>
       <div class="lc-cap">${esc(c.loc||c.road)}<small>${[c.dir,c.dist!=null?c.dist+' km':''].filter(Boolean).map(esc).join(' · ')}</small></div></div>`).join('')}</div>`
     :`<div class="cnote">${esc(locErr||'Loading cameras…')}</div>`;
@@ -3089,7 +3104,7 @@ function renderLocal(){
   const alertHTML=alerts.map(e=>{const k=evInfo(e),ago=e.reported?Math.round((Date.now()/1000-e.reported)/60):null;
       return `<div class="lc-alert"><i>${k.i}</i><div><b>${k.n}${e.full&&k.n!=='Closure'?' · full closure':''} · ${esc(e.road)}${e.dir?' '+esc(shortDir(e.dir)):''}</b><small>${esc(e.desc)}</small></div><span>${esc(e.dist)} km${ago!=null&&ago<720?'<br>'+(ago<60?ago+' min ago':Math.round(ago/60)+'h ago'):''}</span></div>`}).join('');
   const html=`<div class="jf-title">Around ${esc(CFG.city)}</div>
-   <div class="lc-body">${mapHTML}
+   <div class="lc-body${mapHTML?'':' nomap'}">${mapHTML}
     ${alertHTML}
     <div class="jf-glass gd-card lc-drcard"><h2>Drive times &amp; weather there${drvAt?' · '+fmt(new Date(drvAt)):''}</h2>${drvHTML()}</div>
     ${roadsHTML()}
@@ -3337,9 +3352,13 @@ function drawHub(HUB,o){
     const steps=[()=>{const r=hb.querySelectorAll('.hb2-race>div');if(r.length>2)r[r.length-1].remove()},()=>hb.classList.add('tight'),()=>{const r=hb.querySelectorAll('.hb2-rk');if(r.length>2)r[r.length-1].remove()},
       ()=>{const r=hb.querySelectorAll('.hb2-rk');if(r.length>2)r[r.length-1].remove()},()=>{const c=hb.querySelector('.hb2-ld');if(c)c.closest('.gd-card').remove()}];
     for(const f of steps){if(!over())break;f()}};
-  dropMoves();setTimeout(dropMoves,500);
+  dropMoves();setTimeout(dropMoves,500);setTimeout(()=>hideCut(document.querySelector('#'+o.body+' .hb-body')),800);
 }
 /* generic "too tall? remove items from the bottom" helper */
+/* hide cards that only peek in at the bottom (less than 60% of them on screen) */
+function hideCut(b){if(!b)return;for(let n=0;n<6;n++){const bb=b.getBoundingClientRect().bottom+1;
+  const cut=[...b.children].filter(c=>{const r=c.getBoundingClientRect();return c.style.display!=='none'&&r.height>0&&r.bottom>bb&&(bb-r.top)/r.height<.6});
+  if(!cut.length)break;cut.forEach(c=>c.style.display='none')}}
 function fitBody(sel,itemSel){const b=document.querySelector(sel);if(!b)return;[...b.children].forEach(c=>c.style.flexShrink='0');
   const over=()=>b.scrollHeight>b.clientHeight+2;for(let g=0;g<20&&over();g++){const x=b.querySelectorAll(itemSel);if(x.length<=1)break;x[x.length-1].remove()}
   setTimeout(()=>{for(let g=0;g<20&&over();g++){const x=b.querySelectorAll(itemSel);if(x.length<=1)break;x[x.length-1].remove()}},400)}
@@ -3621,16 +3640,20 @@ function npState(){if(NPC().on===false||!NP||!/^(playing|paused)$/.test(NP.state
 const npOn=()=>{const s=npState();return !!s&&s.state==='playing'};
 const npT=x=>{x=Math.max(0,Math.round(x||0));return Math.floor(x/60)+':'+String(x%60).padStart(2,'0')};
 /* album art from Apple's public catalogue, plus two colours from it for the backgrounds */
-async function npArt(s){const k=(s.artist||'')+'|'+(s.album||s.title||'');if(npArtCache[k]!==undefined)return npArtCache[k];npArtCache[k]=null;
+/* songs: cover from Apple's catalogue · YouTube videos (src:'youtube'): the video's own thumbnail */
+const npKey=s=>s.src==='youtube'?'yt|'+(s.vid||s.title):(s.artist||'')+'|'+(s.album||s.title||'');
+const npYT=s=>!!s&&s.src==='youtube';
+async function npArt(s){const k=npKey(s);if(npArtCache[k]!==undefined)return npArtCache[k];npArtCache[k]=null;
   const q=async(term,ent)=>{const j=await jsonpObj('https://itunes.apple.com/search?country=CA&limit=1&entity='+ent+'&term='+encodeURIComponent(term),8000);const r=(j.results||[])[0];return r&&r.artworkUrl100?r.artworkUrl100.replace(/\d+x\d+bb/,'600x600bb'):null};
-  let u=null;try{if(s.album)u=await q(s.artist+' '+s.album,'album');if(!u)u=await q(s.artist+' '+s.title,'song')}catch(e){}
+  let u=null;if(npYT(s))u=s.vid?`https://i.ytimg.com/vi/${encodeURIComponent(s.vid)}/hqdefault.jpg`:null;
+  else try{if(s.album)u=await q(s.artist+' '+s.album,'album');if(!u)u=await q(s.artist+' '+s.title,'song')}catch(e){}
   const out={url:u,pal:null};
   if(u)try{out.pal=await new Promise(res=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{try{const c=document.createElement('canvas');c.width=c.height=6;const x=c.getContext('2d');x.drawImage(im,0,0,6,6);
       const d=x.getImageData(0,0,6,6).data,px=[];for(let i=0;i<d.length;i+=4){const r=d[i],g=d[i+1],b=d[i+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);px.push({r,g,b,sat:mx?(mx-mn)/mx:0,l:(mx+mn)/2})}
       px.sort((a,b)=>b.sat*(.4+b.l/255)-a.sat*(.4+a.l/255));const A=px[0],B=px.find(p=>Math.abs(p.r-A.r)+Math.abs(p.g-A.g)+Math.abs(p.b-A.b)>90)||px[Math.floor(px.length/2)];res([A,B])}catch(e){res(null)}};im.onerror=()=>res(null);im.src=u;setTimeout(()=>res(null),6000)})}catch(e){}
   npArtCache[k]=out;return out}
 const npDark=(p,a)=>`rgba(${Math.round(p.r*.55)},${Math.round(p.g*.55)},${Math.round(p.b*.55)},${a})`;
-function npPaint(){const s=npState(),k=s?(s.artist||'')+'|'+(s.album||s.title||''):'',A=s&&npArtCache[k]||null,pal=A&&A.pal;
+function npPaint(){const s=npState(),k=s?npKey(s):'',A=s&&npArtCache[k]||null,pal=A&&A.pal;
   const r=document.documentElement.style;
   if(pal){r.setProperty('--np1',npDark(pal[0],.94));r.setProperty('--np2',npDark(pal[1],.94));
     $('npBg').style.background=`radial-gradient(circle at 30% 25%,rgb(${pal[0].r},${pal[0].g},${pal[0].b}),transparent 55%),radial-gradient(circle at 75% 65%,rgb(${pal[1].r},${pal[1].g},${pal[1].b}),transparent 55%),#120d1f`}
@@ -3639,18 +3662,18 @@ function npPaint(){const s=npState(),k=s?(s.artist||'')+'|'+(s.album||s.title||'
 const npEq='<span class="np-eq"><i></i><i></i><i></i><i></i></span>';
 function renderNP(){const s=npState(),b=$('npBody');if(!s){b.innerHTML='';return}
   const sig=[s.title,s.artist,s.album,s.state].join('|');if(sig===npSig&&b.innerHTML)return npTick();npSig=sig;
-  b.className=s.state==='paused'?'paused':'';
-  b.innerHTML=`<div class="np-hd">🎵 ${s.state==='paused'?'Paused':'Now playing'}</div><div class="np-art none"></div>
-    <div class="np-meta"><div class="np-t">${esc(s.title||'Unknown song')}</div><div class="np-a">${esc(s.artist||'')}</div>${s.album?`<div class="np-al">${esc(s.album)}${s.year?' · '+s.year:''}</div>`:''}
-    <div class="np-bar"><i class="np-fill"></i></div><div class="np-tm"><span class="np-cur">0:00</span><span>${npT(s.dur)}</span></div>
-    <div class="np-src">${npEq} ${s.state==='paused'?'Paused':'Playing'} on ${esc(s.dev||'Mac')} · Apple Music</div></div>`;
+  const yt=npYT(s);b.className=(s.state==='paused'?'paused':'')+(yt?' yt':'');
+  b.innerHTML=`<div class="np-hd">${yt?'▶️':'🎵'} ${s.state==='paused'?'Paused':yt?'Now watching':'Now playing'}</div><div class="np-art none${yt?' yt':''}"></div>
+    <div class="np-meta"><div class="np-t">${esc(s.title||(yt?'YouTube video':'Unknown song'))}</div><div class="np-a">${esc(s.artist||'')}</div>${s.album&&!yt?`<div class="np-al">${esc(s.album)}${s.year?' · '+s.year:''}</div>`:''}
+    ${s.dur?`<div class="np-bar"><i class="np-fill"></i></div><div class="np-tm"><span class="np-cur">0:00</span><span>${npT(s.dur)}</span></div>`:''}
+    <div class="np-src">${npEq} ${s.state==='paused'?'Paused':yt?'Watching':'Playing'} on ${esc(s.dev||'Mac')} · ${yt?'YouTube':'Apple Music'}</div></div>`;
   npPaint();npTick()}
 function renderNPMini(){const s=npState();if(!s)return;
-  $('npMini').className=s.state==='paused'?'paused':'';
-  $('npMini').innerHTML=`<div class="mn-a"></div><div class="mn-x"><b>${esc(s.title||'')}</b><small>${esc(s.artist||'')}${s.state==='paused'?' · paused':' · on '+esc(s.dev||'Mac')}</small></div>${npEq}<i class="np-fill"></i>`;
+  const yt=npYT(s);$('npMini').className=(s.state==='paused'?'paused':'')+(yt?' yt':'');
+  $('npMini').innerHTML=`<div class="mn-a"></div><div class="mn-x"><b>${esc(s.title||'')}</b><small>${yt?'▶️ ':''}${esc(s.artist||(yt?'YouTube':''))}${s.state==='paused'?' · paused':' · on '+esc(s.dev||'Mac')}</small></div>${npEq}${s.dur?'<i class="np-fill"></i>':''}`;
   $('npCard').className='card'+(s.state==='paused'?' paused':'');
-  $('npCard').innerHTML=`<div class="k">🎵 ${s.state==='paused'?'PAUSED':'NOW PLAYING'}</div><div class="row"><div class="ca"></div><div style="min-width:0"><b>${esc(s.title||'')}</b><small>${esc(s.artist||'')}</small></div></div>
-    <div class="np-bar"><i class="np-fill"></i></div><div class="np-tm"><span class="np-cur">0:00</span><span>on ${esc(s.dev||'Mac')}</span><span>${npT(s.dur)}</span></div>`;
+  $('npCard').innerHTML=`<div class="k">${yt?'▶️':'🎵'} ${s.state==='paused'?'PAUSED':yt?'NOW WATCHING':'NOW PLAYING'}</div><div class="row"><div class="ca${yt?' yt':''}"></div><div style="min-width:0"><b>${esc(s.title||'')}</b><small>${esc(s.artist||(yt?'YouTube':''))}</small></div></div>
+    ${s.dur?`<div class="np-bar"><i class="np-fill"></i></div><div class="np-tm"><span class="np-cur">0:00</span><span>on ${esc(s.dev||'Mac')}</span><span>${npT(s.dur)}</span></div>`:`<div class="np-tm"><span>on ${esc(s.dev||'Mac')} · YouTube</span></div>`}`;
   npPaint();npTick()}
 function npTick(){const s=npState();if(!s)return;const pc=s.dur?Math.min(100,s.cur/s.dur*100):0;
   document.querySelectorAll('.np-fill').forEach(e=>e.style.width=pc.toFixed(2)+'%');document.querySelectorAll('.np-cur').forEach(e=>e.textContent=npT(s.cur))}
@@ -4789,7 +4812,7 @@ function radarSay(){const P=(PL&&PL.planes)||[];if(!P.length)return 'No planes o
 /* Keep pixels moving to avoid burn-in */
 setInterval(()=>{const x=(Math.random()*2-1)*.8,y=(Math.random()*2-1)*.8;document.querySelectorAll('.page').forEach(el=>el.style.transform=`translate(${x}vw,${y}vh)`)},300000);
 
-document.getElementById('ver').textContent='build nova 89';
+document.getElementById('ver').textContent='build nova 92';
 /* ---------- Glass theme background: a softly blurred photo from your folder, changes every few minutes ---------- */
 let bgOn=0,bgFails=0;
 function bgCycle(){
