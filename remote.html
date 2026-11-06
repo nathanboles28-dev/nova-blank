@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<title>Nova Remote</title>
+<script>
+/* ===== SETTINGS =====
+   The private channel name (topic) is NOT stored here, so it isn't visible on GitHub.
+   Open this page once on each phone/computer with #topic=YOURTOPIC on the end of the address; it's remembered after that. */
+const NOVA={
+  wake:['nova','novah','noba','nava','novo','no va'],  // what counts as "Nova" (speech-to-text often hears these)
+  speak:false,                                  // also read Nova's answers out loud on THIS device (answers always show on the dashboard)
+  voice:['Samantha','Ava','Allison','Karen','Google US English','Google UK English Female'],  // first one found is used
+  lang:'en-CA'
+};
+</script>
+<style>
+:root{--ink:#f5f5f7;--dim:rgba(235,235,245,.6);--edge:rgba(255,255,255,.13);--glass:rgba(255,255,255,.08);--accent:#6ea8ff;--live:#ff5c6c}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:#000;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(120% 70% at 50% 0%,#1c2230 0%,#0a0b0f 55%,#000 100%) fixed;padding:max(22px,env(safe-area-inset-top)) 18px max(26px,env(safe-area-inset-bottom))}
+.wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header{display:flex;align-items:center;justify-content:space-between}
+h1{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.pill{font-size:13px;font-weight:600;padding:6px 12px;border-radius:20px;background:var(--glass);border:1px solid var(--edge);color:var(--dim);display:flex;align-items:center;gap:7px}
+.pill i{width:8px;height:8px;border-radius:50%;background:#777}
+.pill.ok i{background:#34c759}.pill.bad i{background:var(--live)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.05));border:1px solid var(--edge);border-radius:22px;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 30px rgba(0,0,0,.35);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px)}
+.mic{display:flex;flex-direction:column;align-items:center;gap:14px;padding:26px 20px 22px;text-align:center}
+#micBtn{width:112px;height:112px;border-radius:50%;border:1px solid var(--edge);background:rgba(255,255,255,.08);color:var(--ink);display:grid;place-items:center;cursor:pointer;transition:transform .15s,background .3s,box-shadow .3s}
+#micBtn:active{transform:scale(.96)}
+#micBtn svg{width:44px;height:44px}
+#micBtn.on{background:rgba(110,168,255,.22);border-color:rgba(110,168,255,.6)}
+#micBtn.armed{background:rgba(110,168,255,.45);box-shadow:0 0 0 10px rgba(110,168,255,.15),0 0 40px rgba(110,168,255,.5);animation:breathe 1.2s ease-in-out infinite}
+@keyframes breathe{50%{box-shadow:0 0 0 18px rgba(110,168,255,.08),0 0 60px rgba(110,168,255,.6)}}
+#micState{font-size:17px;font-weight:600}
+#heard{font-size:15px;color:var(--dim);min-height:20px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.say{padding:16px 18px;display:none;position:relative}
+.sayx{position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;border:1px solid var(--edge);background:rgba(255,255,255,.08);color:var(--ink);font:inherit;font-size:15px;line-height:1}
+.say small{display:block;font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--dim);text-transform:uppercase;margin-bottom:6px}
+.say p{font-size:17px;line-height:1.4}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid button,.row button{font:inherit;color:var(--ink);background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.05));border:1px solid var(--edge);border-radius:18px;
+ padding:16px 6px 13px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:transform .12s,background .2s}
+.grid button:active,.row button:active{transform:scale(.96);background:rgba(255,255,255,.18)}
+.grid button span{font-size:26px;line-height:1}.grid button b{font-size:14px;font-weight:600}
+.sec{margin:6px 4px -2px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.grid.extras button{background:linear-gradient(180deg,rgba(90,180,255,.18),rgba(90,180,255,.06));border-color:rgba(120,190,255,.35)}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.row button{padding:13px 4px;font-size:14px;font-weight:600}
+.tip{font-size:13px;color:var(--dim);line-height:1.5;text-align:center;padding:0 6px}
+.toggle{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;font-size:15px}
+.sw{width:50px;height:30px;border-radius:15px;background:rgba(255,255,255,.18);position:relative;cursor:pointer;transition:background .2s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .2s}
+.sw.on{background:#34c759}
+.grid button.wide{grid-column:1/-1;flex-direction:row;justify-content:center;gap:10px;padding:14px 6px}
+.grid button.wide span{font-size:22px}.sw.on::after{transform:translateX(20px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Nova</h1><div class="pill" id="conn"><i></i><span>Connecting…</span></div></header>
+
+  <div class="card mic">
+    <button id="micBtn" aria-label="Turn voice on or off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <div id="micState">Tap to turn on voice</div>
+    <div id="heard">Say “Nova, show me the weather”</div>
+  </div>
+
+  <div class="card say" id="sayCard"><button class="sayx" id="sayX" aria-label="Close">✕</button><small>Nova</small><p id="sayText"></p></div>
+
+  <div class="sec">Your day</div>
+  <div class="grid">
+    <button data-c="home"><span>🏠</span><b>Home</b></button>
+    <button data-c="weather"><span>⛅</span><b>Weather</b></button>
+    <button data-c="weather maps"><span>🗺️</span><b>Weather maps</b></button>
+    <button data-c="calendar"><span>📅</span><b>Calendar</b></button>
+    <button data-c="countdown"><span>⏳</span><b>Countdowns</b></button>
+    <button data-c="week ahead"><span>🗓️</span><b>Week ahead</b></button>
+    <button data-c="morning mode"><span>☀️</span><b>Morning</b></button>
+  </div>
+  <div class="sec">Sports</div>
+  <div class="grid">
+    <button data-c="leafs hub"><span>🍁</span><b>Leafs</b></button>
+    <button data-c="knights"><span>💚</span><b>Knights</b></button>
+    <button data-c="standings"><span>📊</span><b>Standings</b></button>
+    <button data-c="trades"><span>🔁</span><b>Trades</b></button>
+    <button data-c="what's the score"><span>🔴</span><b>Live game</b></button>
+    <button data-c="game day"><span>🏒</span><b>Game day</b></button>
+    <button data-c="news"><span>📰</span><b>Team news</b></button>
+  </div>
+  <div class="sec">Around town</div>
+  <div class="grid">
+    <button data-c="traffic"><span>🚦</span><b>Around town</b></button>
+    <button data-c="cams"><span>📹</span><b>Traffic cams</b></button>
+    <button data-c="planes"><span>✈️</span><b>Planes</b></button>
+  </div>
+  <div class="sec">Media</div>
+  <div class="grid">
+    <button data-c="jellyfin"><span>🍿</span><b>Jellyfin</b></button>
+    <button data-c="wrapped"><span>🎬</span><b>Wrapped</b></button>
+    <button data-c="what should we watch"><span>🎞️</span><b>Watch next</b></button>
+    <button data-c="photos"><span>🖼️</span><b>Photos</b></button>
+  </div>
+  <div class="sec">Screen</div>
+  <div class="grid">
+    <button data-c="status"><span>🩺</span><b>Status</b></button>
+    <button data-c="goodnight"><span>🌙</span><b>Goodnight</b></button>
+    <button data-c="wake up"><span>☀️</span><b>Wake</b></button>
+    <button data-c="backed up"><span>💾</span><b>Backed up</b></button>
+  </div>
+  <div class="row">
+    <button data-c="back">‹ Back</button>
+    <button data-c="next">Next ›</button>
+    <button data-c="pause">Pause</button>
+    <button data-c="resume">Resume</button>
+  </div>
+
+  <div class="card toggle"><span>Read answers out loud</span><div class="sw" id="speakSw"></div></div>
+  <p class="tip">Keep this page open in its own window. Say “Nova” and then what you want, or say “Nova”, wait for the glow, then ask.</p>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const T=(()=>{try{const h=new URLSearchParams(location.hash.slice(1)),v=h.get('topic');
+  if(v){localStorage.setItem('nova-topic',v.trim());history.replaceState(null,'',location.pathname+location.search)}
+  return localStorage.getItem('nova-topic')||''}catch(e){return ''}})();
+/* no channel saved yet (e.g. a phone home-screen icon keeps its own storage): let it be typed in once */
+function askTopic(){const h=$('heard');h.innerHTML='<button id="setTopic" style="font:inherit;padding:.6em 1em;border-radius:12px;border:0;background:#4d8bff;color:#fff">Tap to enter your Nova channel name</button>';
+  $('setTopic').onclick=()=>{const v=(prompt('Nova channel name (the topic)')||'').trim().replace(/^.*#topic=/,'');if(v){try{localStorage.setItem('nova-topic',v)}catch(e){}location.reload()}}}
+/* ---------- send a command to the dashboard ---------- */
+function send(text){
+  if(!T){setConn(false,'Not set up');askTopic();return}
+  $('heard').textContent='“'+text+'”';
+  fetch('https://ntfy.sh/'+T,{method:'POST',body:text}).then(r=>{if(!r.ok)throw 0;setConn(true)}).catch(()=>setConn(false,'Can\'t reach relay'));
+}
+document.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{unlockSpeech();send(b.dataset.c)}));
+$('sayX').addEventListener('click',()=>{clearTimeout(window._sayT);$('sayCard').style.display='none';if(window.speechSynthesis)speechSynthesis.cancel()});
+function setConn(ok,msg){$('conn').className='pill '+(ok?'ok':'bad');$('conn').querySelector('span').textContent=msg||(ok?'Connected':'Offline')}
+
+/* ---------- answers from the dashboard ---------- */
+let speakOn=NOVA.speak;try{const v=localStorage.getItem('nova-speak-v2');if(v!==null)speakOn=v==='1'}catch(e){}
+$('speakSw').classList.toggle('on',speakOn);
+$('speakSw').onclick=()=>{speakOn=!speakOn;$('speakSw').classList.toggle('on',speakOn);try{localStorage.setItem('nova-speak-v2',speakOn?'1':'0')}catch(e){}};
+function listen(){
+  if(!T){setConn(false,'Not set up');askTopic();return}
+  const es=new EventSource('https://ntfy.sh/'+T+'-reply/sse');
+  es.onopen=()=>setConn(true);
+  es.onerror=()=>setConn(false,'Reconnecting…');
+  es.onmessage=e=>{let d;try{d=JSON.parse(e.data)}catch(x){return}if(d.event&&d.event!=='message')return;
+    if(d.time&&Date.now()/1000-d.time>30)return;
+    $('sayCard').style.display='block';$('sayText').textContent=d.message;clearTimeout(window._sayT);window._sayT=setTimeout(()=>{$('sayCard').style.display='none'},30000);if(speakOn)say(d.message)};
+}
+listen();
+
+/* ---------- speaking ---------- */
+let voice=null;
+function pickVoice(){const vs=speechSynthesis.getVoices();for(const n of NOVA.voice){const v=vs.find(x=>x.name.startsWith(n));if(v){voice=v;return}}voice=vs.find(v=>/^en/i.test(v.lang))||null}
+if('speechSynthesis' in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice}
+let speaking=false;
+function unlockSpeech(){try{if(!window._su){window._su=1;const u=new SpeechSynthesisUtterance('');speechSynthesis.speak(u)}}catch(e){}}
+function say(text){
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);if(voice)u.voice=voice;u.rate=1.02;u.pitch=1;
+  speaking=true;pauseRec();
+  u.onend=u.onerror=()=>{speaking=false;setTimeout(resumeRec,300)};
+  speechSynthesis.speak(u);
+}
+
+/* ---------- listening for "Nova" ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null,micOn=false,armedUntil=0,recRunning=false;
+const wakeRe=new RegExp('\\b('+NOVA.wake.map(w=>w.replace(/ /g,'\\s+')).join('|')+')\\b[,.!?\\s]*','i');
+function chime(){try{const a=window._ac||(window._ac=new (window.AudioContext||window.webkitAudioContext)()),t=a.currentTime,g=a.createGain();g.connect(a.destination);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.45);
+  [880,1320].forEach((f,i)=>{const o=a.createOscillator();o.type='sine';o.frequency.value=f;o.connect(g);o.start(t+i*.09);o.stop(t+.5)})}catch(e){}}
+function ui(){
+  const armed=Date.now()<armedUntil;
+  $('micBtn').className=micOn?(armed?'armed':'on'):'';
+  $('micState').textContent=!SR?'Voice needs Chrome':!micOn?'Tap to turn on voice':armed?'Listening…':'Say “Nova”';
+}
+setInterval(ui,300);
+function build(){
+  rec=new SR();rec.continuous=true;rec.interimResults=true;rec.lang=NOVA.lang;rec.maxAlternatives=1;
+  rec.onstart=()=>{recRunning=true};
+  rec.onresult=e=>{
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const r=e.results[i],txt=r[0].transcript.trim();
+      if(!r.isFinal){if(wakeRe.test(txt)||Date.now()<armedUntil)$('heard').textContent=txt;continue}
+      const m=txt.match(wakeRe);
+      if(m){const after=txt.slice(m.index+m[0].length).trim();
+        if(after.length>1){armedUntil=0;send(after)}else{armedUntil=Date.now()+7000;chime();$('heard').textContent='…'}}
+      else if(Date.now()<armedUntil&&txt.length>1){armedUntil=0;send(txt)}
+    }
+  };
+  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){micOn=false;$('heard').textContent='Microphone blocked. Allow it in the address bar, then tap again.'}};
+  rec.onend=()=>{recRunning=false;if(micOn&&!speaking)setTimeout(startRec,250)};
+}
+function startRec(){if(!SR||!micOn||recRunning||speaking)return;if(!rec)build();try{rec.start()}catch(e){}}
+function pauseRec(){if(rec&&recRunning)try{rec.abort()}catch(e){}}
+function resumeRec(){if(micOn)startRec()}
+$('micBtn').onclick=()=>{
+  unlockSpeech();
+  if(!SR){$('heard').textContent='Voice works in Chrome on a computer. Buttons still work here.';return}
+  micOn=!micOn;try{localStorage.setItem('nova-mic',micOn?'1':'0')}catch(e){}
+  if(micOn){startRec();$('heard').textContent='Say “Nova, show me the weather”'}else{armedUntil=0;pauseRec()}
+  ui();
+};
+/* turn voice back on automatically if it was on last time */
+try{if(SR&&localStorage.getItem('nova-mic')==='1'){micOn=true;startRec()}}catch(e){}
+/* Chrome sometimes stops listening silently; nudge it */
+setInterval(()=>{if(micOn&&!recRunning&&!speaking)startRec()},5000);
+ui();
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+NOVA DASHBOARD: SETUP
+=====================
+A TV dashboard for an upright or sideways screen (it switches layout by itself): weather, calendar, sports scores and live games, team news, trades,
+Jellyfin, traffic, photos, Apple Music "now playing", and a phone remote.
+Nothing personal is in these files. Everything marked ★ is a spot to put your own details.
+
+WHAT'S IN HERE
+  index.html      the dashboard (the screen)
+  remote.html     the phone remote
+  worker.js       the "relay": a free Cloudflare Worker that fetches news, your calendar, Jellyfin, etc.
+  mac/            optional helpers for the Home tech page (nova-stats) and Apple Music (nova-music)
+
+1) PUT THE PAGES ONLINE (free, GitHub Pages)
+  - Make a GitHub repository, upload index.html and remote.html.
+  - Settings > Pages > deploy from the main branch.
+  - Your dashboard is then at https://YOUR-GITHUB-NAME.github.io/REPO-NAME/
+
+2) MAKE THE RELAY (free, Cloudflare Workers)
+  - Cloudflare dashboard > Workers & Pages > Create > Worker. Name it e.g. nova-relay.
+  - Edit code: paste all of worker.js. Near the top, change YOUR-GITHUB-NAME to yours. Deploy.
+  - Storage & databases > Workers KV > Create a namespace (e.g. nova-stats), then
+    Worker > Settings > Bindings > Add > KV namespace: variable name NOVA_KV, pick that namespace.
+  - Worker > Settings > Variables and secrets. Add only what you use:
+      CAL_KEY       any long password you make up. It unlocks your private stuff. (needed)
+      CAL_ICS       your calendar's private ICS link (Outlook/Google "secret address")
+      JF_URL/JF_KEY your Jellyfin server address and an API key (Jellyfin pages)
+      ON511_KEY     Ontario 511 key (traffic cams and road events, Ontario only)
+      TOMTOM_KEY    free TomTom key (live traffic map)
+      HOME          "lat,lon" of your home (drive times start from your door)
+      DRIVE_KEY / DRIVE_FOLDER   Google API key + Drive folder ID for the photos page
+
+3) FILL IN THE SETTINGS (top of index.html, every line marked ★)
+  - Your town and its latitude/longitude
+  - relay: your Worker address (https://nova-relay.yourname.workers.dev)
+  - Your teams (the Leafs / London Knights / Blue Jays in there are examples)
+  - Jellyfin user names, Home tech Mac names, drive-time cities, traffic cameras,
+    recycling (off by default)
+
+4) OPEN IT ON THE TV ONCE WITH YOUR KEY AND CHANNEL
+  https://YOUR-GITHUB-NAME.github.io/REPO-NAME/#calkey=YOUR_CAL_KEY&topic=nova-SOMETHING-RANDOM
+  The screen remembers both and cleans up the address. The "topic" is your private remote channel:
+  make it long and random, and use the same one on the remote and the Mac helpers.
+
+5) PHONE REMOTE
+  Open .../remote.html on your phone, add it to the home screen, and enter the same channel name.
+
+6) OPTIONAL MAC HELPERS (mac folder)
+  Home tech page (drives, internet speed, each Mac):  bash ~/Downloads/nova-stats-setup.sh
+  Apple Music now playing:                            bash ~/Downloads/nova-music-setup.sh
+  Keep nova-stats.sh, nova-stats-setup.sh and nova-stats.env in Downloads. Give /usr/sbin/cron
+  Full Disk Access (System Settings > Privacy & Security). nova-music copies itself somewhere permanent.
+
+DEMO MODE
+  Want to see it filled in first? Set demo:true at the top of the settings: made-up calendar, movies, Macs and music
+  (live weather and sports stay real). It never uses a real key or remote channel. Set it back to false for real use.
+
+Anything you don't set up just stays off or skips its page.
